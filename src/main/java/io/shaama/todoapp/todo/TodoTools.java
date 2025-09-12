@@ -1,7 +1,5 @@
-package io.shaama.todoapp.tools;
+package io.shaama.todoapp.todo;
 
-import io.shaama.todoapp.todo.Todo;
-import io.shaama.todoapp.todo.TodoService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.ai.chat.model.ToolContext;
 import org.springframework.ai.tool.annotation.Tool;
