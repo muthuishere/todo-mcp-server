@@ -1,0 +1,131 @@
+version: '3'
+
+dotenv: ['.env']
+
+vars:
+  APP_NAME: todoapp
+  APP_VERSION: 0.0.1-SNAPSHOT
+  MAIN_CLASS: io/shaama/todoapp/TodoappApplication.java
+
+tasks:
+  # Default task
+  default:
+    desc: "Show available tasks"
+    cmds:
+      - task --list
+
+  # Build tasks for each profile (just for different JAR names)
+  build:stdio:
+    desc: "Build application for STDIO profile"
+    cmds:
+      - ./gradlew clean build -Pprofile=stdio -Pversion={{.APP_VERSION}}
+
+  build:sse:
+    desc: "Build application for SSE profile"
+    cmds:
+      - ./gradlew clean build -Pprofile=sse -Pversion={{.APP_VERSION}}
+
+  build:streamable:
+    desc: "Build application for Streamable profile"
+    cmds:
+      - ./gradlew clean build -Pprofile=streamable -Pversion={{.APP_VERSION}}
+
+  # Build once for all profiles (same JAR, different names)
+  build:
+    desc: "Build application (works for all profiles)"
+    cmds:
+      - ./gradlew clean build -Pversion={{.APP_VERSION}}
+
+
+
+  dev:sse:
+    desc: "Run application in development mode with SSE profile"
+    cmds:
+      - ./gradlew bootRun --args='--spring.profiles.active=sse'
+    interactive: true
+
+  dev:streamable:
+    desc: "Run application in development mode with Streamable profile"
+    cmds:
+      - ./gradlew bootRun --args='--spring.profiles.active=streamable'
+    interactive: true
+
+  # Run built JAR tasks
+  dev:stdio:
+    desc: "Run the built JAR file with STDIO profile"
+    deps:
+      - build:stdio
+    cmds:
+      - java -Dspring.profiles.active=stdio -jar build/libs/{{.APP_NAME}}_stdio-{{.APP_VERSION}}.jar
+    interactive: true
+
+  # Run built JAR tasks
+  run:stdio:
+    desc: "Run the built JAR file with STDIO profile"
+    deps:
+      - build:stdio
+    cmds:
+      - java -Dspring.profiles.active=stdio -jar build/libs/{{.APP_NAME}}_stdio-{{.APP_VERSION}}.jar
+    interactive: true
+
+  run:sse:
+    desc: "Run the built JAR file with SSE profile"
+    deps:
+      - build:sse
+    cmds:
+      - java -Dspring.profiles.active=sse -jar build/libs/{{.APP_NAME}}_sse-{{.APP_VERSION}}.jar
+    interactive: true
+
+  run:streamable:
+    desc: "Run the built JAR file with Streamable profile"
+    deps:
+      - build:streamable
+    cmds:
+      - java -Dspring.profiles.active=streamable -jar build/libs/{{.APP_NAME}}_streamable-{{.APP_VERSION}}.jar
+    interactive: true
+
+  # Generic run task (uses default JAR)
+  run:
+    desc: "Run the built JAR file (specify profile with -- --spring.profiles.active=PROFILE)"
+    deps:
+      - build
+    cmds:
+      - java -jar build/libs/{{.APP_NAME}}-{{.APP_VERSION}}.jar {{.CLI_ARGS}}
+    interactive: true
+
+  # Convenience tasks
+  clean:
+    desc: "Clean build artifacts"
+    cmds:
+      - ./gradlew clean
+
+  test:
+    desc: "Run tests"
+    cmds:
+      - ./gradlew test
+
+  test:watch:
+    desc: "Run tests in watch mode"
+    cmds:
+      - ./gradlew test --continuous
+    interactive: true
+
+  # Build all profiles with different JAR names
+  build:all:
+    desc: "Build application with all profile-specific JAR names"
+    deps:
+      - build:stdio
+      - build:sse
+      - build:streamable
+
+
+  # Dependency tasks
+  deps:check:
+    desc: "Check for dependency updates"
+    cmds:
+      - ./gradlew dependencyUpdates
+
+  deps:tree:
+    desc: "Show dependency tree"
+    cmds:
+      - ./gradlew dependencies
