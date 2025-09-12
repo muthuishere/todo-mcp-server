@@ -1,0 +1,98 @@
+package io.shaama.todoapp.tools;
+
+import io.shaama.todoapp.todo.Todo;
+import io.shaama.todoapp.todo.TodoService;
+import lombok.RequiredArgsConstructor;
+import org.springframework.ai.chat.model.ToolContext;
+import org.springframework.ai.tool.annotation.Tool;
+import org.springframework.ai.tool.annotation.ToolParam;
+import org.springframework.stereotype.Service;
+
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Optional;
+
+@Service
+@RequiredArgsConstructor
+public class TodoTools {
+
+    private final TodoService todoService;
+
+    @Tool(description = "Gets all Todo items")
+    public List<Todo> fetchAllTodos(ToolContext toolContext) {
+        return todoService.getAllTodos();
+    }
+
+    @Tool(description = "Gets a Todo item by ID")
+    public Optional<Todo> fetchTodoById(
+            @ToolParam(description = "id for the Item")
+            Long id,
+
+            ToolContext toolContext
+    ) {
+        return todoService.getTodoById(id);
+    }
+
+    @Tool(description = "Creates a new Todo item")
+    public Todo makeTodo(
+            @ToolParam(description = "Title for the Todo")
+            String title,
+
+            @ToolParam(description = "Description for the Todo")
+            String description,
+
+            @ToolParam(description = "Is the Todo completed?")
+            boolean completed,
+
+            ToolContext toolContext
+    ) {
+        Todo todo = Todo.builder()
+                .title(title)
+                .description(description)
+                .completed(completed)
+                .createdAt(LocalDateTime.now())
+                .updatedAt(LocalDateTime.now())
+                .build();
+
+        return todoService.createTodo(todo);
+    }
+
+    @Tool(description = "Updates an existing Todo item")
+    public Optional<Todo> changeTodo(
+            @ToolParam(description = "id for the Item")
+            Long id,
+
+            @ToolParam(description = "Title for the Todo")
+            String title,
+
+            @ToolParam(description = "Description for the Todo")
+            String description,
+
+            @ToolParam(description = "Is the Todo completed?")
+            boolean completed,
+
+            ToolContext toolContext
+    ) {
+        return todoService.getTodoById(id).map(todo -> {
+            todo.setTitle(title);
+            todo.setDescription(description);
+            todo.setCompleted(completed);
+            todo.setUpdatedAt(LocalDateTime.now());
+            return todoService.createTodo(todo);
+        });
+    }
+
+    @Tool(description = "Deletes a Todo item by ID")
+    public boolean removeTodo(
+            @ToolParam(description = "id for the Item")
+            Long id,
+
+            ToolContext toolContext
+    ) {
+        return todoService.getTodoById(id).map(todo -> {
+            todoService.deleteTodo(id);
+            return true;
+
+        }).orElse(false);
+    }
+}

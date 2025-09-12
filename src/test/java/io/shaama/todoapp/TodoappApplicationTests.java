@@ -1,10 +1,10 @@
-package com.bothub.weather_mcp_server;
+package io.shaama.todoapp;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
-@SpringBootTest
-class WeatherMcpServerApplicationTests {
+@SpringBootTest(classes = io.shaama.todoapp.TodoappApplication.class)
+class TodoappApplicationTests {
 
 	@Test
 	void contextLoads() {
