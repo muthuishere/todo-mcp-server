@@ -1,2 +1,2 @@
-# weather-mcp-server
-Weather Info
+# todo-mcp-server
+Todo App

@@ -1,13 +1,13 @@
-package com.bothub.weather_mcp_server;
+package io.shaama.todoapp;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
-public class WeatherMcpServerApplication {
+public class TodoappApplication {
 
 	public static void main(String[] args) {
-		SpringApplication.run(WeatherMcpServerApplication.class, args);
+		SpringApplication.run(TodoappApplication.class, args);
 	}
 
 }
