@@ -1,5 +1,6 @@
 package io.shaama.todoapp.todo;
 
+import io.shaama.todoapp.todo.model.Todo;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
