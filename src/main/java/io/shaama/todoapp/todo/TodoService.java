@@ -1,5 +1,6 @@
 package io.shaama.todoapp.todo;
 
+import io.shaama.todoapp.todo.model.Todo;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 

@@ -1,4 +1,4 @@
-package io.shaama.todoapp.todo;
+package io.shaama.todoapp.todo.model;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;

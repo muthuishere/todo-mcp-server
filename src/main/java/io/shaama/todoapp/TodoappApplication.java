@@ -1,6 +1,6 @@
 package io.shaama.todoapp;
 
-import io.shaama.todoapp.tools.TodoTools;
+import io.shaama.todoapp.todo.TodoTools;
 import org.springframework.ai.tool.ToolCallbackProvider;
 import org.springframework.ai.tool.method.MethodToolCallbackProvider;
 import org.springframework.boot.SpringApplication;

@@ -1,7 +1,7 @@
-package io.shaama.todoapp.tools;
+package io.shaama.todoapp.todo;
 
-import io.shaama.todoapp.todo.Todo;
-import io.shaama.todoapp.todo.TodoService;
+import io.shaama.todoapp.todo.model.Todo;
+import io.shaama.todoapp.todo.model.TodoToolResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.ai.chat.model.ToolContext;
 import org.springframework.ai.tool.annotation.Tool;
@@ -11,6 +11,8 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
+
+import static io.shaama.todoapp.utils.Sampling.createSamplingRequest;
 
 @Service
 @RequiredArgsConstructor
@@ -34,7 +36,7 @@ public class TodoTools {
     }
 
     @Tool(description = "Creates a new Todo item")
-    public Todo makeTodo(
+    public TodoToolResponse makeTodo(
             @ToolParam(description = "Title for the Todo")
             String title,
 
@@ -54,7 +56,18 @@ public class TodoTools {
                 .updatedAt(LocalDateTime.now())
                 .build();
 
-        return todoService.createTodo(todo);
+        Todo savedTodo = todoService.createTodo(todo);
+
+        String fact = createSamplingRequest(
+                toolContext,
+                "You are a fun and witty assistant that provides interesting facts about everyday items.",
+                "Provide an interesting fact about a todo item with the title: " + title + " and description: " + description
+        );
+
+        return TodoToolResponse.builder()
+                .todo(savedTodo)
+                .fact(fact)
+                .build();
     }
 
     @Tool(description = "Updates an existing Todo item")
