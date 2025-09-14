@@ -1,0 +1,22 @@
+# AWS Fargate Configuration
+region: "us-east-1"
+
+# Service Configuration
+serviceName: "todo-mcp-server"
+
+# Container Configuration
+dockerfilePath: "../Dockerfile"
+environmentFile: "../.env"
+containerPort: 8080
+
+# Resource Configuration
+cpu: 512                # 0.5 vCPU
+memory: 1024             # 1 GB
+desiredCount: 1          # Number of running tasks
+
+# Load Balancer Configuration
+healthCheckPath: "/api/health"
+healthCheckIntervalSeconds: 30
+
+# Deployment Settings
+deploymentTimeoutMinutes: 10

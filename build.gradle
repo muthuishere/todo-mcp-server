@@ -44,7 +44,10 @@ bootJar {
 }
 
 dependencies {
-    implementation 'org.springframework.boot:spring-boot-starter-web'
+    implementation("org.springframework.boot:spring-boot-starter-web") {
+        exclude group: "org.apache.tomcat.embed", module: "tomcat-embed-core"
+    }
+    implementation("org.apache.tomcat.embed:tomcat-embed-core:10.1.41")
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
     implementation 'com.h2database:h2'
     implementation 'org.springframework.boot:spring-boot-starter-validation'
@@ -53,19 +56,80 @@ dependencies {
     implementation 'org.springframework.ai:spring-ai-starter-mcp-server'
     implementation 'org.springframework.ai:spring-ai-starter-mcp-server-webmvc'
 
+    // AWS Lambda dependencies
+    testImplementation 'com.amazonaws:aws-lambda-java-core:1.2.3'
+    testImplementation 'com.amazonaws:aws-lambda-java-events:3.11.4'
+
+
+    // AWS SDK dependencies
+    testImplementation 'software.amazon.awssdk:lambda'
+    testImplementation 'software.amazon.awssdk:ecr'
+    testImplementation 'software.amazon.awssdk:iam'
+    testImplementation 'software.amazon.awssdk:sts'
+    testImplementation 'software.amazon.awssdk:apprunner'
+    
+    // AWS SDK dependencies for Fargate
+    testImplementation 'software.amazon.awssdk:ecs'
+    testImplementation 'software.amazon.awssdk:ec2'
+    testImplementation 'software.amazon.awssdk:elasticloadbalancingv2'
+    testImplementation 'software.amazon.awssdk:cloudwatchlogs'
+
+    // Azure SDK dependencies
+    testImplementation 'com.azure.resourcemanager:azure-resourcemanager:2.43.0'
+    testImplementation 'com.azure:azure-identity:1.13.2'
+    testImplementation 'com.azure.resourcemanager:azure-resourcemanager-loganalytics:1.1.0'
+    testImplementation 'com.azure.resourcemanager:azure-resourcemanager-appcontainers:1.1.0'
+
+
+
+
+
+    testImplementation "com.google.cloud:google-cloud-run"
+
+    // Artifact Registry Client
+    testImplementation "com.google.cloud:google-cloud-artifact-registry"
+
+
 
     compileOnly 'org.projectlombok:lombok'
     annotationProcessor 'org.projectlombok:lombok'
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    testImplementation 'io.github.cdimascio:dotenv-java:3.0.2'
+    testImplementation 'org.yaml:snakeyaml:2.2'
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 }
 
 dependencyManagement {
     imports {
         mavenBom "org.springframework.ai:spring-ai-bom:${springAiVersion}"
+        mavenBom 'software.amazon.awssdk:bom:2.25.16'
+        mavenBom "com.google.cloud:libraries-bom:26.67.0"
     }
 }
 
 tasks.named('test') {
 	useJUnitPlatform()
+}
+
+// Infrastructure CLI task
+task infraCli(type: JavaExec) {
+    description = 'Run infrastructure CLI'
+    group = 'infrastructure'
+    classpath = sourceSets.test.runtimeClasspath
+    mainClass = 'io.shaama.todoapp.infra.InfraCli'
+    dependsOn compileTestJava
+    
+    // Set args from project property
+    if (project.hasProperty('infraArgs')) {
+        args project.property('infraArgs').toString().split(' ')
+    }
+}
+
+configurations.all {
+    resolutionStrategy.eachDependency { details ->
+        if (details.requested.group == "org.apache.tomcat.embed") {
+            details.useVersion("10.1.41")
+            details.because("Align all Tomcat embeds to avoid Jre22Compat (Java 22) code on Java 21")
+        }
+    }
 }

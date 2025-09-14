@@ -1,0 +1,32 @@
+# Azure Container Apps Configuration
+# This file configures deployment to Azure Container Apps using Consumption Plan
+
+# Core Azure configuration
+# subscriptionId: "auto"  # Will be automatically fetched from Azure CLI default subscription
+# resourceGroupName: "auto"  # Will be automatically generated from serviceName as: serviceName + "-rg"
+location: "East US"
+serviceName: "todo-mcp-server"
+
+# Container configuration
+dockerfilePath: "../Dockerfile"
+environmentFile: "../.env"
+containerPort: 8080
+
+# Resource configuration
+cpu: "0.25"      # CPU cores (0.25, 0.5, 0.75, 1.0, 1.25, 1.5, 1.75, 2.0)
+memory: "0.5Gi"  # Memory (0.5Gi, 1.0Gi, 1.5Gi, 2.0Gi, 3.0Gi, 3.5Gi, 4.0Gi)
+minReplicas: 0   # Minimum replicas (0 for scale-to-zero)
+maxReplicas: 1  # Maximum replicas
+
+# Health check configuration
+healthCheckPath: "/api/health"
+healthCheckIntervalSeconds: 30
+deploymentTimeoutMinutes: 10
+
+# Note: The following resources are automatically named based on serviceName:
+# - Resource Group Name: todo-mcp-server-rg (auto-generated from serviceName)
+# - Environment Name: todo-mcp-server-env
+# - Container App Name: todo-mcp-server-app
+# - Registry Name: todomcpserverregistry (alphanumeric only)
+# - Workspace Name: todo-mcp-server-workspace
+# External ingress is always enabled for public access

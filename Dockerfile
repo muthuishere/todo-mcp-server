@@ -9,11 +9,11 @@ RUN ./gradlew --version
 
 # Copy source code and build
 COPY src src/
-COPY bin bin/
+
 
 # Build argument for profile selection
 ARG PROFILE=streamable
-RUN ./gradlew clean build -Pprofile=${PROFILE} -Pversion=0.0.1-SNAPSHOT
+RUN ./gradlew clean build -x test -Pprofile=${PROFILE} -Pversion=0.0.1-SNAPSHOT
 
 # Runtime stage
 FROM eclipse-temurin:21-jre-alpine
@@ -42,7 +42,7 @@ EXPOSE 8080
 
 # Health check using curl (matches the healthcheck in docker-compose)
 HEALTHCHECK --interval=30s --timeout=10s --retries=3 \
-  CMD curl -f http://localhost:8080/actuator/health || exit 1
+  CMD curl -f http://localhost:8080/api/health || exit 1
 
 # Start the application
 ENTRYPOINT ["java", "-jar", "app.jar"]
